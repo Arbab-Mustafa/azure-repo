@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
   try {
-    // Basic health check response
+    // Basic health check - you can add more sophisticated checks here
     const healthData = {
       status: "healthy",
       timestamp: new Date().toISOString(),
@@ -11,30 +11,21 @@ export async function GET(request: NextRequest) {
       version: process.env.npm_package_version || "1.0.0",
       hostname: process.env.WEBSITE_HOSTNAME || "localhost",
       port: process.env.PORT || 3000,
-      memory: {
-        used:
-          Math.round((process.memoryUsage().heapUsed / 1024 / 1024) * 100) /
-          100,
-        total:
-          Math.round((process.memoryUsage().heapTotal / 1024 / 1024) * 100) /
-          100,
-        external:
-          Math.round((process.memoryUsage().external / 1024 / 1024) * 100) /
-          100,
-      },
-      system: {
-        platform: process.platform,
-        arch: process.arch,
-        nodeVersion: process.version,
+      checks: {
+        server: "ok",
+        memory: {
+          used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
+          total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024),
+          unit: "MB",
+        },
       },
     };
 
     return NextResponse.json(healthData, {
       status: 200,
       headers: {
+        "Content-Type": "application/json",
         "Cache-Control": "no-cache, no-store, must-revalidate",
-        Pragma: "no-cache",
-        Expires: "0",
       },
     });
   } catch (error) {
@@ -44,32 +35,15 @@ export async function GET(request: NextRequest) {
       {
         status: "unhealthy",
         timestamp: new Date().toISOString(),
-        error: "Internal server error during health check",
+        error: error instanceof Error ? error.message : "Unknown error",
       },
       {
-        status: 500,
+        status: 503,
         headers: {
+          "Content-Type": "application/json",
           "Cache-Control": "no-cache, no-store, must-revalidate",
-          Pragma: "no-cache",
-          Expires: "0",
         },
       }
     );
-  }
-}
-
-// Support HEAD requests for simple health checks
-export async function HEAD(request: NextRequest) {
-  try {
-    return new NextResponse(null, {
-      status: 200,
-      headers: {
-        "Cache-Control": "no-cache, no-store, must-revalidate",
-        Pragma: "no-cache",
-        Expires: "0",
-      },
-    });
-  } catch (error) {
-    return new NextResponse(null, { status: 500 });
   }
 }

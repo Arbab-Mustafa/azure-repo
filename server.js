@@ -18,36 +18,6 @@ app.prepare().then(() => {
       const parsedUrl = parse(req.url, true);
       const { pathname, query } = parsedUrl;
 
-      // Health check endpoint for Azure load balancer
-      if (pathname === "/health" || pathname === "/api/health") {
-        res.statusCode = 200;
-        res.setHeader("Content-Type", "application/json");
-        res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-        res.setHeader("Pragma", "no-cache");
-        res.setHeader("Expires", "0");
-
-        const healthData = {
-          status: "healthy",
-          timestamp: new Date().toISOString(),
-          uptime: process.uptime(),
-          environment: process.env.NODE_ENV || "development",
-          hostname: hostname,
-          port: port,
-          memory: {
-            used:
-              Math.round((process.memoryUsage().heapUsed / 1024 / 1024) * 100) /
-              100,
-            total:
-              Math.round(
-                (process.memoryUsage().heapTotal / 1024 / 1024) * 100
-              ) / 100,
-          },
-        };
-
-        res.end(JSON.stringify(healthData));
-        return;
-      }
-
       await handle(req, res, parsedUrl);
     } catch (err) {
       console.error("Error occurred handling", req.url, err);

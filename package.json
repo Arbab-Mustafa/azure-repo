@@ -11,8 +11,7 @@
     "start": "next start",
     "lint": "next lint",
     "export": "next export",
-    "health-check": "curl -f http://localhost:3000/api/health || exit 1",
-    "start:prod": "NODE_ENV=production next start"
+    "health-check": "curl -f http://localhost:3000/api/health || exit 1"
   },
   "dependencies": {
     "next": "14.2.5",
