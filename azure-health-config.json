@@ -1,0 +1,52 @@
+{
+  "healthCheck": {
+    "enabled": true,
+    "endpoints": {
+      "health": "/api/health",
+      "healthz": "/api/healthz",
+      "ready": "/api/ready",
+      "live": "/api/live"
+    },
+    "intervals": {
+      "health": 30,
+      "ready": 10,
+      "live": 5
+    },
+    "timeouts": {
+      "health": 5000,
+      "ready": 3000,
+      "live": 2000
+    },
+    "retries": 3,
+    "description": "Health check configuration for Azure App Service deployment"
+  },
+  "monitoring": {
+    "applicationInsights": {
+      "enabled": true,
+      "trackDependencies": true,
+      "trackExceptions": true,
+      "trackRequests": true
+    },
+    "customMetrics": [
+      "memory_usage",
+      "response_time",
+      "uptime",
+      "request_count"
+    ]
+  },
+  "azure": {
+    "appService": {
+      "healthCheckPath": "/api/health",
+      "healthCheckInterval": "00:01:00",
+      "healthCheckTimeout": "00:00:30",
+      "healthCheckGracePeriod": "00:10:00"
+    },
+    "loadBalancer": {
+      "probePath": "/api/ready",
+      "probeInterval": 15,
+      "probeTimeout": 5,
+      "unhealthyThreshold": 3,
+      "healthyThreshold": 2
+    }
+  }
+}
